@@ -8,3 +8,6 @@ Wall Micromouse will be made, if failed, back up would be normal Micromouse in w
 
 # Made On Arduino
 Danny Chen (Coder), Andy/Benjamin (Builder)
+
+![image](https://github.com/dannywchen/wallmicromouse/assets/155599374/1aee53ae-727d-4692-9822-ecc90dd974dd)
+
