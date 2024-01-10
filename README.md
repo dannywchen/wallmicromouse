@@ -6,5 +6,5 @@ To make mundane daily tasks of accessing "wall" non-reachable objects easier to 
 
 Wall Micromouse will be made, if failed, back up would be normal Micromouse in which it finds the most optimal maze route using machine learning.
 
-#Made On Arduino
+# Made On Arduino
 Danny Chen (Coder), Andy/Benjamin (Builder)
