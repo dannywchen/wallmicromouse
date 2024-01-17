@@ -4,12 +4,12 @@
 #include <DIYables_IRcontroller.h>  // DIYables_IRcontroller library
 
 #define IR_RECEIVER_PIN 9  // The Arduino pin connected to IR receiver
-#define ENA_PIN 8          // First Motor
+#define ENA_PIN 8          // Left Motor control Wheel 
 #define IN1_PIN 6          // The Arduino pin connected to the IN1 pin L298N
 #define IN2_PIN 5          // The Arduino pin connected to the IN2 pin L298N
 #define IN3_PIN 4          // The Arduino pin connected to the IN3 pin L298N
 #define IN4_PIN 3          // The Arduino pin connected to the IN4 pin L298N
-#define ENB_PIN 2          // The Arduino pin connected to the ENB pin L298N
+#define ENB_PIN 7          // Right Motor control Wheel
 
 DIYables_IRcontroller_17 irController(IR_RECEIVER_PIN, 200);  // debounce time is 200ms
 
