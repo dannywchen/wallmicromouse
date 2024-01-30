@@ -1,0 +1,25 @@
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+RF24 radio(9, 10); // CE, CSN pins
+const byte address[6] = "00001";
+
+struct JoystickData {
+  int x;
+  int y;
+} joystickData;
+
+void setup() {
+  radio.begin();
+  radio.openWritingPipe(address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.stopListening();
+}
+
+void loop() {
+  joystickData.x = analogRead(A0); // X-axis
+  joystickData.y = analogRead(A1); // Y-axis
+  
+  radio.write(&joystickData, sizeof(JoystickData));
+}
