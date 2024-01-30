@@ -1,0 +1,60 @@
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+RF24 radio(9, 10); // CE, CSN pins
+const byte address[6] = "00001";
+
+struct JoystickData {
+  int x;
+  int y;
+} joystickData;
+
+void setup() {
+  radio.begin();
+  radio.openReadingPipe(0, address);
+  radio.setPALevel(RF24_PA_MIN);
+  radio.startListening();
+
+  // Setup motor driver pins
+  pinMode(3, OUTPUT); // Motor A
+  pinMode(5, OUTPUT); // Motor B
+}
+
+void controlMotors(int x, int y) {
+  // Normalize joystick values to -255 to 255
+  int speedX = map(x, 0, 1023, -255, 255);
+  int speedY = map(y, 0, 1023, -255, 255);
+
+  int leftMotorSpeed, rightMotorSpeed;
+
+  // Forward/Backward
+  if (speedY > 0) { // Forward
+    leftMotorSpeed = rightMotorSpeed = speedY;
+  } else if (speedY < 0) { // Backward
+    leftMotorSpeed = rightMotorSpeed = speedY;
+  } else { // Stop
+    leftMotorSpeed = rightMotorSpeed = 0;
+  }
+
+  // Turning: Adjust motor speeds based on X-axis
+  if (speedX > 0) { // Turn Right
+    rightMotorSpeed -= speedX;
+    rightMotorSpeed = max(rightMotorSpeed, 0); // Ensure it doesn't go below 0
+  } else if (speedX < 0) { // Turn Left
+    leftMotorSpeed += speedX;
+    leftMotorSpeed = max(leftMotorSpeed, 0); // Ensure it doesn't go below 0
+  }
+
+  // Apply the speeds to the motors
+  analogWrite(3, leftMotorSpeed);  // Motor A
+  analogWrite(5, rightMotorSpeed); // Motor B
+}
+
+
+void loop() {
+  if (radio.available()) {
+    radio.read(&joystickData, sizeof(JoystickData));
+    controlMotors(joystickData.x, joystickData.y);
+  }
+}
