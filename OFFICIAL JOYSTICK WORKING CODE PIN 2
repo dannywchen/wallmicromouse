@@ -1,0 +1,30 @@
+// Define joystick pins
+const int joystickX = A0;  // X-axis
+const int joystickY = A1;  // Y-axis
+const int joystickButton = 2; // Button
+
+void setup() {
+  // Initialize Serial Monitor
+  Serial.begin(9600);
+
+  // Set joystick button as an input
+  pinMode(joystickButton, INPUT_PULLUP);
+}
+
+void loop() {
+  // Read joystick values
+  int xValue = analogRead(joystickX);
+  int yValue = analogRead(joystickY);
+  int buttonState = digitalRead(joystickButton);
+
+  // Print the values to the Serial Monitor
+  Serial.print("X-axis: ");
+  Serial.print(xValue);
+  Serial.print("\tY-axis: ");
+  Serial.print(yValue);
+  Serial.print("\tButton: ");
+  Serial.println(buttonState == HIGH ? "Released" : "Pressed");
+
+  // Small delay before next read
+  delay(100);
+}
