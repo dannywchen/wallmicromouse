@@ -1,0 +1,21 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not used but included for compatibility
+
+RH_ASK driver; // Using default constructor for simplicity
+
+void setup() {
+    Serial.begin(9600); // Start the serial communication
+    if (!driver.init())
+         Serial.println("Receiver init failed");
+}
+
+void loop() {
+    uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];
+    uint8_t buflen = sizeof(buf);
+
+    if (driver.recv(buf, &buflen)) {
+        Serial.print("Message: ");
+        Serial.write(buf, buflen);
+        Serial.println();
+    }
+}
