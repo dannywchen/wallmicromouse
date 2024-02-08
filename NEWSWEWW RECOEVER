@@ -1,0 +1,31 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but included for compatibility
+
+// Initialize RH_ASK with RX pin set to 12
+RH_ASK driver(2000, 12, -1, -1);
+
+void setup() {
+    Serial.begin(9600); // Initialize serial communication
+    if (!driver.init()) {
+        Serial.println("Receiver initialization failed");
+    } else {
+        Serial.println("Receiver is ready");
+    }
+}
+
+void loop() {
+    uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];
+    uint8_t buflen = sizeof(buf);
+
+    // Attempt to receive a message
+    if (driver.recv(buf, &buflen)) {
+        // If a message is received, print it
+        Serial.print("Received message: ");
+        Serial.write(buf, buflen);
+        Serial.println();
+    }
+    // Unlike previous versions, there's no else statement to print anything if no message is received.
+    // If you wish to see a sign of life from the receiver, uncomment the following line.
+    // Serial.println("Listening..."); // Uncomment this line to show it's actively listening
+    delay(1000); // Short delay to slow down the loop, making Serial prints easier to read
+}
