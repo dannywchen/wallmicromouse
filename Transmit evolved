@@ -1,0 +1,20 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+RH_ASK driver(2000, -1, 5, -1); // Initialize with TX pin 5
+
+void setup() {
+    Serial.begin(9600);
+    if (!driver.init())
+        Serial.println("Transmitter init failed");
+}
+
+void loop() {
+    static int count = 0;
+    char msg[10];
+    snprintf(msg, sizeof(msg), "Count: %d", count++);
+    driver.send((uint8_t *)msg, strlen(msg));
+    driver.waitPacketSent();
+    Serial.println(msg);
+    delay(2000); // Send a message every 2 seconds
+}
