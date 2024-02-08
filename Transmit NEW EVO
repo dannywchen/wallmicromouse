@@ -1,0 +1,25 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+RH_ASK driver(2000, -1, 5, -1); // Initializing with TX pin as 5
+
+void setup() {
+    Serial.begin(9600); // Start the serial communication
+    if (!driver.init()) {
+         Serial.println("Transmitter init failed");
+    } else {
+         Serial.println("Transmitter is ready");
+    }
+}
+
+void loop() {
+    const char *msg = "Hello World";
+    bool sent = driver.send((uint8_t *)msg, strlen(msg));
+    driver.waitPacketSent();
+    if (sent) {
+        Serial.println("Message sent");
+    } else {
+        Serial.println("Sending failed");
+    }
+    delay(2000); // Wait for 2 seconds before sending the next message
+}
