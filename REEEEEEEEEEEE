@@ -1,0 +1,28 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+// Initialize ASK object with the receive pin as 5
+RH_ASK driver(2000, 5, -1, -1);
+
+void setup()
+{
+    Serial.begin(9600);    // Start Serial Monitor
+    if (!driver.init())
+         Serial.println("init failed");
+}
+
+void loop()
+{
+    uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];
+    uint8_t buflen = sizeof(buf);
+
+    if (driver.recv(buf, &buflen)) // Check for received messages
+    {
+      Serial.print("Message: ");
+      for (int i = 0; i < buflen; i++)
+      {
+          Serial.print((char)buf[i]);
+      }
+      Serial.println();
+    }
+}
