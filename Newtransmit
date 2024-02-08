@@ -1,0 +1,23 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+RH_ASK driver(2000, -1, 12, -1); // Assuming pin 12 for transmission
+
+void setup() {
+    Serial.begin(9600); // Start Serial Monitor
+    if (!driver.init()) {
+         Serial.println("Transmitter init failed");
+    } else {
+         Serial.println("Transmitter init success");
+    }
+}
+
+void loop() {
+    static int count = 0; // Message counter
+    String msg = "Hello World " + String(count); // Append count to message
+    driver.send((uint8_t *)msg.c_str(), msg.length());
+    driver.waitPacketSent();
+    Serial.println("Message sent: " + msg);
+    count++; // Increment the message counter
+    delay(1000); // Wait for a second before resending
+}
