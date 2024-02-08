@@ -1,0 +1,23 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+// Initialize RH_ASK without specifying custom pins
+RH_ASK driver;
+
+void setup() {
+    Serial.begin(9600); // Initialize Serial Monitor
+    if (!driver.init()) {
+        Serial.println("Receiver initialization failed");
+    }
+}
+
+void loop() {
+    uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];
+    uint8_t buflen = sizeof(buf);
+
+    if (driver.recv(buf, &buflen)) { // Check if any message is received
+        // Print the received message directly
+        Serial.write(buf, buflen);
+        Serial.println(); // Ensure the next message is on a new line
+    }
+}
