@@ -1,0 +1,17 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not used but included for compatibility
+
+// Initialize driver with transmitter pin set to 5
+RH_ASK driver(2000, -1, 5, -1); 
+
+void setup() {
+    Serial.begin(9600); // Initialize Serial Monitor
+    driver.init();
+}
+
+void loop() {
+    const char *msg = "Hello World";
+    driver.send((uint8_t *)msg, strlen(msg));
+    driver.waitPacketSent();
+    delay(1000); // Wait for 1 second before sending the next message
+}
