@@ -1,0 +1,43 @@
+// This code successfully transmit joystick data in numbers and interpret in words and transmit to reciever.
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+RH_ASK driver(2000, 5, 5, 0); // speed, tx pin, rx pin, ptt pin
+
+const int joystickX = A0; // VRx pin
+const int joystickY = A1; // VRy pin
+
+void setup()
+{
+    Serial.begin(9600);
+    if (!driver.init())
+         Serial.println("init failed");
+    // Initialize Joystick pins
+    pinMode(joystickX, INPUT);
+    pinMode(joystickY, INPUT);
+}
+
+void loop()
+{
+    int xValue = analogRead(joystickX);
+    int yValue = analogRead(joystickY);
+    char *direction;
+
+    // Determine the joystick direction
+    if (xValue < 400) {
+        direction = "LEFT";
+    } else if (xValue > 600) {
+        direction = "RIGHT";
+    } else if (yValue < 400) {
+        direction = "UP";
+    } else if (yValue > 600) {
+        direction = "DOWN";
+    } else {
+        direction = "CENTER";
+    }
+
+    // Send the direction to the receiver
+    driver.send((uint8_t *)direction, strlen(direction));
+    driver.waitPacketSent();
+    delay(200); // Short delay to avoid spamming messages too quickly
+}
