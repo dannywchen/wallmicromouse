@@ -1,0 +1,25 @@
+// This one only recieves data of joystick direction but no motors involved.
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+// Adjust the receiver initialization to use pin 5 for the receiver
+RH_ASK driver(2000, 5, 5, 0); // speed, tx pin, rx pin, ptt pin
+
+void setup()
+{
+    Serial.begin(9600); // Initialize serial communication
+    if (!driver.init())
+         Serial.println("init failed");
+}
+
+void loop()
+{
+    uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];
+    uint8_t buflen = sizeof(buf);
+
+    if (driver.recv(buf, &buflen)) // Check if we received a message
+    {
+      Serial.print("Joystick Direction: ");
+      Serial.println((char*)buf);
+    }
+}
