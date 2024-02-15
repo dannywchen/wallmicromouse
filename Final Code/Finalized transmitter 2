@@ -1,0 +1,45 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+RH_ASK driver(2000, 5, 5, 0);
+
+const int joystickX = A0;
+const int joystickY = A1;
+
+unsigned long lastSendTime = 0;
+const unsigned long debounceDelay = 200; // Debounce delay in milliseconds
+char lastDirection[10] = "CENTER";
+
+void setup() {
+    Serial.begin(9600);
+    if (!driver.init())
+         Serial.println("init failed");
+    pinMode(joystickX, INPUT);
+    pinMode(joystickY, INPUT);
+}
+
+void loop() {
+    int xValue = analogRead(joystickX);
+    int yValue = analogRead(joystickY);
+    char *direction;
+
+    if (xValue < 400) {
+        direction = "LEFT";
+    } else if (xValue > 600) {
+        direction = "RIGHT";
+    } else if (yValue < 400) {
+        direction = "UP";
+    } else if (yValue > 600) {
+        direction = "DOWN";
+    } else {
+        direction = "CENTER";
+    }
+
+    // Only send if direction changes or on debounce interval
+    if ((strcmp(direction, lastDirection) != 0 || millis() - lastSendTime > debounceDelay)) {
+        driver.send((uint8_t *)direction, strlen(direction));
+        driver.waitPacketSent();
+        strcpy(lastDirection, direction);
+        lastSendTime = millis();
+    }
+}
