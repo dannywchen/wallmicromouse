@@ -1,0 +1,34 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+RH_ASK driver(2000, 5, 5, 0); // Initialize ASK object
+
+const int motorPin = 2; // Motor control pin
+
+void setup() {
+    Serial.begin(9600);    // Start serial communication
+    pinMode(motorPin, OUTPUT); // Set motor pin as output
+    if (!driver.init()) {
+        Serial.println("init failed");
+    }
+}
+
+void loop() {
+    uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];
+    uint8_t buflen = sizeof(buf);
+
+    // Check for new messages continuously
+    if (driver.recv(buf, &buflen)) {
+        buf[buflen] = '\0'; // Ensure message is null-terminated
+        Serial.print("Received direction: ");
+        Serial.println((char*)buf);
+
+        if (strcmp((char*)buf, "CENTER") == 0) {
+            digitalWrite(motorPin, LOW); // Turn the motor OFF for CENTER
+            Serial.println("Motor OFF - Joystick in center");
+        } else {
+            digitalWrite(motorPin, HIGH); // Turn the motor ON for any other direction
+            Serial.println("Motor ON - Joystick moved");
+        }
+    }
+}
