@@ -1,0 +1,56 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+RH_ASK driver(2000, 5, 5, 0); // Initialize ASK object
+
+const int motorPin1 = 2; // Motor control pin for the first motor
+const int motorPin2 = 8; // Motor control pin for the second motor
+
+void setup() {
+    Serial.begin(9600);    // Start serial communication
+    pinMode(motorPin1, OUTPUT); // Set motor pin 1 as output
+    pinMode(motorPin2, OUTPUT); // Set motor pin 2 as output
+    if (!driver.init()) {
+        Serial.println("init failed");
+    }
+}
+
+void loop() {
+    uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];
+    uint8_t buflen = sizeof(buf);
+
+    // Check for new messages continuously
+    if (driver.recv(buf, &buflen)) {
+        buf[buflen] = '\0'; // Ensure message is null-terminated
+        Serial.print("Received direction: ");
+        Serial.println((char*)buf);
+
+        if (strcmp((char*)buf, "CENTER") == 0) {
+            // Turn both motors OFF for CENTER
+            digitalWrite(motorPin1, LOW);
+            digitalWrite(motorPin2, LOW);
+            Serial.println("Both Motors OFF - Joystick in center");
+        } else if (strcmp((char*)buf, "RIGHT") == 0) {
+            // Turn motor on pin 2 ON and motor on pin 8 OFF
+            digitalWrite(motorPin1, HIGH);
+            digitalWrite(motorPin2, LOW);
+            Serial.println("Motor 1 ON, Motor 2 OFF - Joystick right");
+        } else if (strcmp((char*)buf, "LEFT") == 0) {
+            // Turn motor on pin 8 ON and motor on pin 2 OFF
+            digitalWrite(motorPin1, LOW);
+            digitalWrite(motorPin2, HIGH);
+            Serial.println("Motor 1 OFF, Motor 2 ON - Joystick left");
+        } else if (strcmp((char*)buf, "UP") == 0) {
+            // Turn both motors ON
+            digitalWrite(motorPin1, HIGH);
+            digitalWrite(motorPin2, HIGH);
+            Serial.println("Both Motors ON - Joystick up");
+        } else if (strcmp((char*)buf, "DOWN") == 0) {
+            // Here we represent "negative direction" as both motors OFF for simplicity
+            // In an actual setup with reverse capability, implement the logic as needed
+            digitalWrite(motorPin1, LOW);
+            digitalWrite(motorPin2, LOW);
+            Serial.println("Both Motors OFF (representing negative direction) - Joystick down");
+        }
+    }
+}
