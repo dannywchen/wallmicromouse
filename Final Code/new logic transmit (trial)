@@ -1,0 +1,44 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+RH_ASK driver(2000, 5, 5, 0); // Initialize ASK object
+
+const int joystickX = A0; // VRx pin for X-axis movement
+const int joystickY = A1; // VRy pin for Y-axis movement
+const int joystickButton = 7; // Button pin for the joystick click
+
+void setup() {
+    Serial.begin(9600); // Start serial communication
+    if (!driver.init())
+         Serial.println("init failed");
+    pinMode(joystickX, INPUT); // Set X-axis pin as input
+    pinMode(joystickY, INPUT); // Set Y-axis pin as input
+    pinMode(joystickButton, INPUT_PULLUP); // Set button pin as input with internal pull-up resistor
+}
+
+void loop() {
+    int xValue = analogRead(joystickX);
+    int yValue = analogRead(joystickY);
+    bool buttonPressed = !digitalRead(joystickButton); // Read the button state (inverted because of INPUT_PULLUP)
+    char *message;
+
+    // Determine the message based on joystick movement or button press
+    if (buttonPressed) {
+        message = "clicked"; // Button is pressed
+    } else if (xValue < 400) {
+        message = "LdRo"; // Left disable, Right on
+    } else if (xValue > 600) {
+        message = "LoRd"; // Left on, Right disable
+    } else if (yValue < 400) {
+        message = "fLoRo"; // Forward, Left on, Right on
+    } else if (yValue > 600) {
+        message = "bLoRo"; // Backward, Left on, Right on
+    } else {
+        message = "LdRd"; // Left disable, Right disable
+    }
+
+    // Send the determined message
+    driver.send((uint8_t *)message, strlen(message));
+    driver.waitPacketSent();
+    delay(200); // Short delay to avoid spamming messages too quickly
+}
