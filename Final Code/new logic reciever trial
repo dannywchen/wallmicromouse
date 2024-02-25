@@ -1,0 +1,55 @@
+#include <RH_ASK.h>
+#include <SPI.h> // Not actually used but needed to compile
+
+RH_ASK driver(2000, 5, 5, 0); // Initialize ASK object
+
+const int leftMotorPin = 8; // Left motor control pin
+const int rightMotorPin = 2; // Right motor control pin
+
+void setup() {
+    Serial.begin(9600);    // Start serial communication
+    pinMode(leftMotorPin, OUTPUT); // Set the left motor pin as output
+    pinMode(rightMotorPin, OUTPUT); // Set the right motor pin as output
+    if (!driver.init()) {
+        Serial.println("init failed");
+    }
+}
+
+void loop() {
+    uint8_t buf[RH_ASK_MAX_MESSAGE_LEN];
+    uint8_t buflen = sizeof(buf);
+
+    if (driver.recv(buf, &buflen)) {
+        buf[buflen] = '\0'; // Ensure message is null-terminated
+        Serial.print("Received command: ");
+        Serial.println((char*)buf);
+
+        // Act based on the received command
+        if (strcmp((char*)buf, "clicked") == 0) {
+            // "clicked" message received, stop both motors
+            digitalWrite(leftMotorPin, LOW);
+            digitalWrite(rightMotorPin, LOW);
+            Serial.println("Both Motors Stopped - Joystick Clicked");
+        } else if (strcmp((char*)buf, "LdRd") == 0) {
+            digitalWrite(leftMotorPin, LOW);
+            digitalWrite(rightMotorPin, LOW);
+            Serial.println("Both Motors Disabled");
+        } else if (strcmp((char*)buf, "fLoRo") == 0) {
+            digitalWrite(leftMotorPin, HIGH);
+            digitalWrite(rightMotorPin, HIGH);
+            Serial.println("Both Motors Forward");
+        } else if (strcmp((char*)buf, "bLoRo") == 0) {
+            digitalWrite(leftMotorPin, HIGH);
+            digitalWrite(rightMotorPin, HIGH);
+            Serial.println("Both Motors Backward (Check hardware for actual direction)");
+        } else if (strcmp((char*)buf, "LdRo") == 0) {
+            digitalWrite(leftMotorPin, LOW);
+            digitalWrite(rightMotorPin, HIGH);
+            Serial.println("Turning Left - Left Motor Disabled, Right Motor Enabled");
+        } else if (strcmp((char*)buf, "LoRd") == 0) {
+            digitalWrite(leftMotorPin, HIGH);
+            digitalWrite(rightMotorPin, LOW);
+            Serial.println("Turning Right - Left Motor Enabled, Right Motor Disabled");
+        }
+    }
+}
