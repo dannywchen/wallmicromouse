@@ -38,8 +38,8 @@ void loop() {
         } else if (strcmp((char*)buf, "bLoRo") == 0) {
             // Backward: Enable both motors - Assuming same as forward for simplicity
             // For actual backward movement, hardware-specific control is required
-            digitalWrite(leftMotorPin, HIGH);
-            digitalWrite(rightMotorPin, HIGH);
+            digitalWrite(leftMotorPin, LOW);
+            digitalWrite(rightMotorPin, LOW);
             Serial.println("Both Motors Backward (Check hardware for actual direction)");
         } else if (strcmp((char*)buf, "LdRo") == 0) {
             // Turn left: Disable left motor, enable right motor
